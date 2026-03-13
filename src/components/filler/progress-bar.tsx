@@ -28,10 +28,10 @@ export function ProgressBar({ progress }: { progress: number }) {
 
   return (
     <>
-      {/* Top thin bar */}
-      <div className="fixed top-0 left-0 right-0 z-50 h-1 bg-muted">
+      {/* Top thin bar — green */}
+      <div className="fixed top-0 left-0 right-0 z-50 h-1.5 bg-green-200/30">
         <motion.div
-          className="h-full bg-primary"
+          className="h-full bg-green-500"
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3, ease: "easeOut" }}
@@ -43,24 +43,32 @@ export function ProgressBar({ progress }: { progress: number }) {
         {showMotivation && (
           <motion.p
             key={quote}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="mx-auto mb-2 w-fit max-w-md rounded-full bg-primary/10 px-4 py-1.5 text-center text-sm text-primary"
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{
+              opacity: 1,
+              y: [0, -6, 0],
+              scale: 1,
+            }}
+            transition={{
+              opacity: { duration: 0.3 },
+              y: { duration: 1.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" },
+              scale: { duration: 0.3 },
+            }}
+            className="mx-auto mb-3 w-fit max-w-lg rounded-full bg-green-500/10 px-6 py-2 text-center text-base font-medium text-green-600 dark:text-green-400"
           >
             {quote}
           </motion.p>
         )}
-        <div className="flex items-center gap-3 border-t bg-background/80 px-4 py-2 backdrop-blur-sm">
-          <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+        <div className="flex items-center gap-3 border-t bg-background/80 px-4 py-3 backdrop-blur-sm">
+          <div className="h-4 flex-1 overflow-hidden rounded-full bg-green-200/30">
             <motion.div
-              className="h-full rounded-full bg-primary"
+              className="h-full rounded-full bg-gradient-to-r from-green-500 to-green-400"
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             />
           </div>
-          <span className="w-10 text-right text-xs font-medium tabular-nums text-muted-foreground">
+          <span className="w-10 text-right text-sm font-semibold tabular-nums text-green-600 dark:text-green-400">
             {Math.round(progress)}%
           </span>
         </div>
