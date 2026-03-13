@@ -9,6 +9,7 @@ import {
   Mail,
   Hash,
   SlidersHorizontal,
+  ImageUp,
 } from "lucide-react";
 
 export const QUESTION_TYPES = [
@@ -22,6 +23,7 @@ export const QUESTION_TYPES = [
   "email",
   "number",
   "likert",
+  "image_upload",
 ] as const;
 
 export type QuestionType = (typeof QUESTION_TYPES)[number];
@@ -40,4 +42,5 @@ export const QUESTION_TYPE_CONFIG: Record<
   email: { label: "Email", icon: Mail },
   number: { label: "Number", icon: Hash },
   likert: { label: "Likert Scale", icon: SlidersHorizontal },
+  image_upload: { label: "Image Upload", icon: ImageUp },
 };

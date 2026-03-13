@@ -153,14 +153,21 @@ export default function ResponsesPage({
                             </td>
                             {form.questions
                               .sort((a, b) => a.order - b.order)
-                              .map((q) => (
-                                <td
-                                  key={q.id}
-                                  className="max-w-48 truncate py-3 pr-4"
-                                >
-                                  {answerMap.get(q.id) || "—"}
-                                </td>
-                              ))}
+                              .map((q) => {
+                                const val = answerMap.get(q.id);
+                                return (
+                                  <td
+                                    key={q.id}
+                                    className="max-w-48 truncate py-3 pr-4"
+                                  >
+                                    {q.type === "image_upload" && val?.startsWith("data:image") ? (
+                                      <img src={val} alt="Upload" className="h-10 w-10 rounded object-cover" />
+                                    ) : (
+                                      val || "—"
+                                    )}
+                                  </td>
+                                );
+                              })}
                             <td className="py-3">
                               <Button
                                 variant="ghost"
@@ -206,7 +213,15 @@ export default function ResponsesPage({
                         <p className="text-sm font-medium text-muted-foreground">
                           {answer.question.title}
                         </p>
-                        <p className="mt-1">{answer.value || "—"}</p>
+                        {answer.question.type === "image_upload" && answer.value?.startsWith("data:image") ? (
+                          <img
+                            src={answer.value}
+                            alt="Uploaded"
+                            className="mt-2 max-h-64 rounded-lg border object-contain"
+                          />
+                        ) : (
+                          <p className="mt-1">{answer.value || "—"}</p>
+                        )}
                         <Separator className="mt-4" />
                       </div>
                     ))}
