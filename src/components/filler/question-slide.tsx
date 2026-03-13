@@ -90,7 +90,7 @@ export function QuestionSlide({
       animate="center"
       exit="exit"
       transition={transition}
-      className="flex min-h-screen flex-col items-center justify-center px-4"
+      className="flex min-h-screen flex-col items-center justify-center px-4 pb-16"
     >
       <div className="w-full max-w-xl space-y-6">
         <div>
