@@ -14,6 +14,7 @@ import { EmailField } from "./fields/email-field";
 import { NumberField } from "./fields/number-field";
 import { LikertField } from "./fields/likert-field";
 import { ImageUploadField } from "./fields/image-upload-field";
+import { SocialMediaField } from "./fields/social-media-field";
 
 const variants = {
   enter: (direction: number) => ({
@@ -69,6 +70,7 @@ const FIELD_MAP: Record<
   number: NumberField,
   likert: LikertField,
   image_upload: ImageUploadField,
+  social_media: SocialMediaField,
 };
 
 export function QuestionSlide({

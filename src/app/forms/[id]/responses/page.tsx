@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, MessageSquare, Calendar, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, MessageSquare, Calendar, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
 
 interface Answer {
   id: string;
@@ -30,6 +30,25 @@ interface Form {
   id: string;
   title: string;
   questions: { id: string; title: string; type: string; order: number }[];
+}
+
+function SocialMediaLink({ value }: { value: string }) {
+  const sepIndex = value.indexOf("::");
+  if (sepIndex === -1) return <span>{value}</span>;
+  const platform = value.slice(0, sepIndex);
+  const handle = value.slice(sepIndex + 2);
+  const url = handle.startsWith("http") ? handle : `https://${handle}`;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 text-primary hover:underline"
+    >
+      <span className="capitalize">{platform}</span>
+      <ExternalLink className="h-3 w-3" />
+    </a>
+  );
 }
 
 export default function ResponsesPage({
@@ -162,6 +181,8 @@ export default function ResponsesPage({
                                   >
                                     {val?.startsWith("data:image") ? (
                                       <img src={val} alt="Upload" className="h-10 w-10 rounded object-cover" />
+                                    ) : val?.includes("::") ? (
+                                      <SocialMediaLink value={val} />
                                     ) : (
                                       val || "—"
                                     )}
@@ -219,6 +240,10 @@ export default function ResponsesPage({
                             alt="Uploaded"
                             className="mt-2 max-h-64 rounded-lg border object-contain"
                           />
+                        ) : answer.value?.includes("::") ? (
+                          <p className="mt-1">
+                            <SocialMediaLink value={answer.value} />
+                          </p>
                         ) : (
                           <p className="mt-1">{answer.value || "—"}</p>
                         )}
