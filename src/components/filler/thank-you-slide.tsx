@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Share2, Check } from "lucide-react";
 
 const variants = {
   enter: (direction: number) => ({
@@ -18,6 +19,14 @@ const variants = {
 const transition = { duration: 0.4, ease: [0.32, 0.72, 0, 1] as const };
 
 export function ThankYouSlide({ direction }: { direction: number }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleShare() {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
+
   return (
     <motion.div
       custom={direction}
@@ -34,6 +43,30 @@ export function ThankYouSlide({ direction }: { direction: number }) {
         <p className="mt-2 text-lg text-muted-foreground">
           Your response has been recorded.
         </p>
+
+        <button
+          onClick={handleShare}
+          className="mt-6 inline-flex items-center gap-2 rounded-lg border border-border bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+        >
+          {copied ? (
+            <Check className="h-4 w-4" />
+          ) : (
+            <Share2 className="h-4 w-4" />
+          )}
+          {copied ? "Link copied!" : "Share this survey"}
+        </button>
+
+        <div className="mt-10 border-t border-border pt-6">
+          <p className="text-sm text-muted-foreground">
+            Like this survey?{" "}
+            <a
+              href="/"
+              className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
+            >
+              Create your own for free
+            </a>
+          </p>
+        </div>
       </div>
     </motion.div>
   );
