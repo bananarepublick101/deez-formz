@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, use } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { BuilderHeader } from "@/components/builder/builder-header";
@@ -39,20 +39,22 @@ export default function BuilderPage({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const fetchForm = useCallback(async () => {
-    const res = await fetch(`/api/forms/${id}`);
-    if (!res.ok) {
-      router.push("/dashboard");
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/signin");
       return;
     }
-    const data = await res.json();
-    setForm(data);
-  }, [id, router]);
-
-  useEffect(() => {
-    if (status === "unauthenticated") router.push("/signin");
-    if (status === "authenticated") fetchForm();
-  }, [status, router, fetchForm]);
+    if (status !== "authenticated") return;
+    let cancelled = false;
+    fetch(`/api/forms/${id}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled) return;
+        if (!data) { router.push("/dashboard"); return; }
+        setForm(data);
+      });
+    return () => { cancelled = true; };
+  }, [status, router, id]);
 
   const selectedQuestion = form?.questions.find((q) => q.id === selectedId) ?? null;
 

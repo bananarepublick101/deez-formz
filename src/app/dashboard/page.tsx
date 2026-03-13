@@ -34,11 +34,20 @@ export default function DashboardPage() {
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/signin");
+      return;
     }
-    if (status === "authenticated") {
-      fetchForms();
-    }
-  }, [status, router, fetchForms]);
+    if (status !== "authenticated") return;
+    let cancelled = false;
+    fetch("/api/forms")
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (!cancelled) {
+          setForms(data);
+          setLoading(false);
+        }
+      });
+    return () => { cancelled = true; };
+  }, [status, router]);
 
   if (status === "loading" || loading) {
     return (
