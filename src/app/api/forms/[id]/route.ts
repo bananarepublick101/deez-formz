@@ -1,0 +1,65 @@
+import { NextResponse } from "next/server";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const form = await prisma.form.findUnique({
+    where: { id, userId: session.user.id },
+    include: { questions: { orderBy: { order: "asc" } } },
+  });
+
+  if (!form) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  return NextResponse.json(form);
+}
+
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const data = await req.json();
+
+  const form = await prisma.form.update({
+    where: { id, userId: session.user.id },
+    data: {
+      title: data.title,
+      description: data.description,
+    },
+  });
+
+  return NextResponse.json(form);
+}
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  await prisma.form.delete({
+    where: { id, userId: session.user.id },
+  });
+
+  return NextResponse.json({ success: true });
+}
