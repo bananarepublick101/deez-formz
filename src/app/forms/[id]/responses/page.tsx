@@ -160,7 +160,7 @@ export default function ResponsesPage({
                                     key={q.id}
                                     className="max-w-48 truncate py-3 pr-4"
                                   >
-                                    {q.type === "image_upload" && val?.startsWith("data:image") ? (
+                                    {val?.startsWith("data:image") ? (
                                       <img src={val} alt="Upload" className="h-10 w-10 rounded object-cover" />
                                     ) : (
                                       val || "—"
@@ -213,7 +213,7 @@ export default function ResponsesPage({
                         <p className="text-sm font-medium text-muted-foreground">
                           {answer.question.title}
                         </p>
-                        {answer.question.type === "image_upload" && answer.value?.startsWith("data:image") ? (
+                        {answer.value?.startsWith("data:image") ? (
                           <img
                             src={answer.value}
                             alt="Uploaded"
