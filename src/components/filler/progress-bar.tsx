@@ -28,10 +28,14 @@ export function ProgressBar({ progress }: { progress: number }) {
 
   return (
     <>
-      {/* Top thin bar — green */}
-      <div className="fixed top-0 left-0 right-0 z-50 h-1.5 bg-green-200/30">
+      {/* Top thin bar */}
+      <div
+        className="fixed top-0 left-0 right-0 z-50 h-1.5"
+        style={{ backgroundColor: "var(--theme-progress-bg, rgba(34,197,94,0.3))" }}
+      >
         <motion.div
-          className="h-full bg-green-500"
+          className="h-full"
+          style={{ backgroundColor: "var(--theme-progress-bar, #22c55e)" }}
           initial={{ width: 0 }}
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3, ease: "easeOut" }}
@@ -54,21 +58,34 @@ export function ProgressBar({ progress }: { progress: number }) {
               y: { duration: 1.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" },
               scale: { duration: 0.3 },
             }}
-            className="mx-auto mb-3 w-fit max-w-lg rounded-full bg-green-500/10 px-6 py-2 text-center text-base font-medium text-green-600 dark:text-green-400"
+            className="mx-auto mb-3 w-fit max-w-lg rounded-full px-6 py-2 text-center text-base font-medium"
+            style={{
+              backgroundColor: "var(--theme-progress-bg, rgba(34,197,94,0.1))",
+              color: "var(--theme-progress-text, #4ade80)",
+            }}
           >
             {quote}
           </motion.p>
         )}
         <div className="flex items-center gap-3 border-t bg-background/80 px-4 py-3 backdrop-blur-sm">
-          <div className="h-4 flex-1 overflow-hidden rounded-full bg-green-200/30">
+          <div
+            className="h-4 flex-1 overflow-hidden rounded-full"
+            style={{ backgroundColor: "var(--theme-progress-bg, rgba(34,197,94,0.3))" }}
+          >
             <motion.div
-              className="h-full rounded-full bg-gradient-to-r from-green-500 to-green-400"
+              className="h-full rounded-full"
+              style={{
+                background: `linear-gradient(to right, var(--theme-progress-bar, #22c55e), var(--theme-progress-bar-to, #4ade80))`,
+              }}
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.4, ease: "easeOut" }}
             />
           </div>
-          <span className="w-10 text-right text-sm font-semibold tabular-nums text-green-600 dark:text-green-400">
+          <span
+            className="w-10 text-right text-sm font-semibold tabular-nums"
+            style={{ color: "var(--theme-progress-text, #4ade80)" }}
+          >
             {Math.round(progress)}%
           </span>
         </div>
