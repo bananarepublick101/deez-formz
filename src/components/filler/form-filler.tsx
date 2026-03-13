@@ -6,6 +6,7 @@ import { AvatarSlide, type AvatarId, AVATAR_EMOJI_MAP } from "./avatar-slide";
 import { WelcomeSlide } from "./welcome-slide";
 import { QuestionSlide } from "./question-slide";
 import { ThankYouSlide } from "./thank-you-slide";
+import { ThemeSlide, THEMES } from "./theme-slide";
 import { ProgressBar } from "./progress-bar";
 
 interface Question {
@@ -26,21 +27,23 @@ interface Form {
 }
 
 export function FormFiller({ form }: { form: Form }) {
-  // -2 = avatar, -1 = welcome, 0..n = questions, n+1 = thank you
-  const [currentIndex, setCurrentIndex] = useState(-2);
+  // -3 = avatar, -2 = theme picker, -1 = welcome, 0..n = questions, n+1 = thank you
+  const [currentIndex, setCurrentIndex] = useState(-3);
   const [direction, setDirection] = useState(1);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [avatar, setAvatar] = useState<AvatarId | null>(null);
+  const [selectedTheme, setSelectedTheme] = useState("forest-green");
 
   const totalQuestions = form.questions.length;
-  const isAvatarSelect = currentIndex === -2;
+  const isAvatarSelect = currentIndex === -3;
+  const isThemePicker = currentIndex === -2;
   const isWelcome = currentIndex === -1;
   const isThankYou = currentIndex === totalQuestions;
   const currentQuestion = form.questions[currentIndex] ?? null;
 
   const progress =
-    isAvatarSelect || isWelcome ? 0 : isThankYou ? 100 : ((currentIndex + 1) / totalQuestions) * 100;
+    isAvatarSelect || isThemePicker || isWelcome ? 0 : isThankYou ? 100 : ((currentIndex + 1) / totalQuestions) * 100;
 
   const goNext = useCallback(() => {
     if (currentIndex < totalQuestions) {
@@ -50,7 +53,7 @@ export function FormFiller({ form }: { form: Form }) {
   }, [currentIndex, totalQuestions]);
 
   const goPrev = useCallback(() => {
-    if (currentIndex > -2 && !submitted) {
+    if (currentIndex > -3 && !submitted) {
       setDirection(-1);
       setCurrentIndex((i) => i - 1);
     }
@@ -80,11 +83,16 @@ export function FormFiller({ form }: { form: Form }) {
     }
   }
 
+  function handleAvatarSelect(selectedAvatar: AvatarId) {
+    setAvatar(selectedAvatar);
+  }
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Enter" || e.key === "ArrowDown") {
         e.preventDefault();
         if (isAvatarSelect && avatar) goNext();
+        else if (isThemePicker) goNext();
         else if (isWelcome) goNext();
         else if (!isThankYou) handleNext();
       }
@@ -96,14 +104,24 @@ export function FormFiller({ form }: { form: Form }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex, answers, isAvatarSelect, isWelcome, isThankYou, avatar]);
+  }, [currentIndex, answers, isAvatarSelect, isThemePicker, isWelcome, isThankYou, avatar]);
 
-  function handleAvatarSelect(selectedAvatar: AvatarId) {
-    setAvatar(selectedAvatar);
-  }
+  const activeTheme = THEMES.find((t) => t.id === selectedTheme) ?? THEMES[2];
+
+  const themeStyles: React.CSSProperties = {
+    "--theme-primary": activeTheme.primary,
+    "--theme-accent": activeTheme.accent,
+    "--theme-progress-bar": activeTheme.progressBar,
+    "--theme-progress-bar-to": activeTheme.progressBarTo,
+    "--theme-progress-bg": activeTheme.progressBg,
+    "--theme-progress-text": activeTheme.progressText,
+  } as React.CSSProperties;
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
+    <div
+      className="relative min-h-screen overflow-hidden bg-background"
+      style={themeStyles}
+    >
       <ProgressBar progress={progress} />
 
       {/* Persistent avatar in top-right corner */}
@@ -127,6 +145,15 @@ export function FormFiller({ form }: { form: Form }) {
               goNext();
             }}
             selected={avatar}
+          />
+        )}
+        {isThemePicker && (
+          <ThemeSlide
+            key="theme"
+            direction={direction}
+            selectedTheme={selectedTheme}
+            onSelectTheme={setSelectedTheme}
+            onNext={goNext}
           />
         )}
         {isWelcome && (
