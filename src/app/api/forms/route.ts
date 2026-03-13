@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { getSessionOrDev } from "@/lib/dev-auth";
 import { prisma } from "@/lib/prisma";
 
 export async function GET() {
-  const session = await auth();
+  const session = await getSessionOrDev();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -20,7 +20,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
+  const session = await getSessionOrDev();
   console.log("POST /api/forms session:", JSON.stringify(session?.user));
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized", debug: { hasSession: !!session, hasUser: !!session?.user, userId: session?.user?.id } }, { status: 401 });

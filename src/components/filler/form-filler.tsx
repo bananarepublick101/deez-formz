@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { AvatarSlide, type AvatarId, AVATAR_EMOJI_MAP } from "./avatar-slide";
 import { WelcomeSlide } from "./welcome-slide";
 import { QuestionSlide } from "./question-slide";
 import { ThankYouSlide } from "./thank-you-slide";
@@ -25,19 +26,21 @@ interface Form {
 }
 
 export function FormFiller({ form }: { form: Form }) {
-  // -1 = welcome, 0..n = questions, n+1 = thank you
-  const [currentIndex, setCurrentIndex] = useState(-1);
+  // -2 = avatar, -1 = welcome, 0..n = questions, n+1 = thank you
+  const [currentIndex, setCurrentIndex] = useState(-2);
   const [direction, setDirection] = useState(1);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [avatar, setAvatar] = useState<AvatarId | null>(null);
 
   const totalQuestions = form.questions.length;
+  const isAvatarSelect = currentIndex === -2;
   const isWelcome = currentIndex === -1;
   const isThankYou = currentIndex === totalQuestions;
   const currentQuestion = form.questions[currentIndex] ?? null;
 
   const progress =
-    isWelcome ? 0 : isThankYou ? 100 : ((currentIndex + 1) / totalQuestions) * 100;
+    isAvatarSelect || isWelcome ? 0 : isThankYou ? 100 : ((currentIndex + 1) / totalQuestions) * 100;
 
   const goNext = useCallback(() => {
     if (currentIndex < totalQuestions) {
@@ -47,7 +50,7 @@ export function FormFiller({ form }: { form: Form }) {
   }, [currentIndex, totalQuestions]);
 
   const goPrev = useCallback(() => {
-    if (currentIndex > -1 && !submitted) {
+    if (currentIndex > -2 && !submitted) {
       setDirection(-1);
       setCurrentIndex((i) => i - 1);
     }
@@ -81,7 +84,8 @@ export function FormFiller({ form }: { form: Form }) {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Enter" || e.key === "ArrowDown") {
         e.preventDefault();
-        if (isWelcome) goNext();
+        if (isAvatarSelect && avatar) goNext();
+        else if (isWelcome) goNext();
         else if (!isThankYou) handleNext();
       }
       if (e.key === "ArrowUp") {
@@ -92,12 +96,39 @@ export function FormFiller({ form }: { form: Form }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex, answers, isWelcome, isThankYou]);
+  }, [currentIndex, answers, isAvatarSelect, isWelcome, isThankYou, avatar]);
+
+  function handleAvatarSelect(selectedAvatar: AvatarId) {
+    setAvatar(selectedAvatar);
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background">
       <ProgressBar progress={progress} />
+
+      {/* Persistent avatar in top-right corner */}
+      {avatar && !isAvatarSelect && (
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="fixed top-4 right-4 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 shadow-lg ring-2 ring-primary/20"
+        >
+          <span className="text-4xl">{AVATAR_EMOJI_MAP[avatar]}</span>
+        </motion.div>
+      )}
+
       <AnimatePresence mode="wait" custom={direction}>
+        {isAvatarSelect && (
+          <AvatarSlide
+            key="avatar"
+            direction={direction}
+            onSelect={(a) => {
+              handleAvatarSelect(a);
+              goNext();
+            }}
+            selected={avatar}
+          />
+        )}
         {isWelcome && (
           <WelcomeSlide
             key="welcome"

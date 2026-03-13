@@ -40,11 +40,11 @@ export default function BuilderPage({
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
+    if (status === "unauthenticated" && process.env.NODE_ENV === "production") {
       router.push("/signin");
       return;
     }
-    if (status !== "authenticated") return;
+    if (status === "loading" && process.env.NODE_ENV === "production") return;
     let cancelled = false;
     fetch(`/api/forms/${id}`)
       .then((res) => (res.ok ? res.json() : null))

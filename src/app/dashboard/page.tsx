@@ -32,11 +32,17 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
+    if (status === "loading") return;
+
+    // In dev mode, skip auth redirect and load forms directly
     if (status === "unauthenticated") {
-      router.push("/signin");
-      return;
+      if (process.env.NODE_ENV === "production") {
+        router.push("/signin");
+        return;
+      }
+      // Dev mode: try loading forms without session
     }
-    if (status !== "authenticated") return;
+
     let cancelled = false;
     fetch("/api/forms")
       .then((res) => (res.ok ? res.json() : []))
@@ -49,7 +55,7 @@ export default function DashboardPage() {
     return () => { cancelled = true; };
   }, [status, router]);
 
-  if (status === "loading" || loading) {
+  if ((status === "loading" && process.env.NODE_ENV === "production") || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="animate-pulse text-muted-foreground">Loading...</div>
