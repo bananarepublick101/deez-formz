@@ -123,20 +123,27 @@ export function FormFiller({ form }: { form: Form }) {
 
   const activeTheme = THEMES.find((t) => t.id === selectedTheme) ?? THEMES[2];
 
-  const themeStyles: React.CSSProperties = {
-    "--theme-primary": activeTheme.primary,
-    "--theme-accent": activeTheme.accent,
-    "--theme-progress-bar": activeTheme.progressBar,
-    "--theme-progress-bar-to": activeTheme.progressBarTo,
-    "--theme-progress-bg": activeTheme.progressBg,
-    "--theme-progress-text": activeTheme.progressText,
-  } as React.CSSProperties;
+  // Apply theme CSS variables to document root so fixed-position elements can access them
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--theme-primary", activeTheme.primary);
+    root.style.setProperty("--theme-accent", activeTheme.accent);
+    root.style.setProperty("--theme-progress-bar", activeTheme.progressBar);
+    root.style.setProperty("--theme-progress-bar-to", activeTheme.progressBarTo);
+    root.style.setProperty("--theme-progress-bg", activeTheme.progressBg);
+    root.style.setProperty("--theme-progress-text", activeTheme.progressText);
+    return () => {
+      root.style.removeProperty("--theme-primary");
+      root.style.removeProperty("--theme-accent");
+      root.style.removeProperty("--theme-progress-bar");
+      root.style.removeProperty("--theme-progress-bar-to");
+      root.style.removeProperty("--theme-progress-bg");
+      root.style.removeProperty("--theme-progress-text");
+    };
+  }, [activeTheme]);
 
   return (
-    <div
-      className="relative min-h-screen overflow-hidden bg-background"
-      style={themeStyles}
-    >
+    <div className="relative min-h-screen overflow-hidden bg-background">
       <ProgressBar progress={progress} quotes={t.quotes} />
 
       {/* Persistent avatar in top-right corner */}

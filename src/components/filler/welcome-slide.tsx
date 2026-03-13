@@ -49,7 +49,7 @@ export function WelcomeSlide({
         {description && (
           <p className="mt-4 text-lg text-muted-foreground">{description}</p>
         )}
-        <Button size="lg" className="mt-8" onClick={onStart}>
+        <Button size="lg" className="mt-8" onClick={onStart} style={{ backgroundColor: "var(--theme-primary)" }}>
           {t.start}
           <ArrowDown className="ml-2 h-4 w-4" />
         </Button>

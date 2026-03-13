@@ -9,10 +9,10 @@ export function Header() {
           Typeform Clone
         </Link>
         <div className="flex items-center gap-4">
-          <Link href="/signin">
+          <Link href="/dashboard">
             <Button variant="ghost">Sign In</Button>
           </Link>
-          <Link href="/signin">
+          <Link href="/dashboard">
             <Button>Get Started</Button>
           </Link>
         </div>

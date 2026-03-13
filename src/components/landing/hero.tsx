@@ -15,7 +15,7 @@ export function Hero() {
           Get higher completion rates and better data from your audience.
         </p>
         <div className="mt-10 flex items-center justify-center gap-4">
-          <Link href="/signin">
+          <Link href="/dashboard">
             <Button size="lg" className="text-lg px-8 py-6">
               Get Started Free
             </Button>

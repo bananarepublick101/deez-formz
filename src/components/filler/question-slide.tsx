@@ -120,7 +120,7 @@ export function QuestionSlide({
         />
 
         <div className="flex items-center gap-3">
-          <Button onClick={onNext} size="lg">
+          <Button onClick={onNext} size="lg" style={{ backgroundColor: "var(--theme-primary)" }}>
             {isLast ? (
               <>
                 {t.submit} <Check className="ml-2 h-4 w-4" />

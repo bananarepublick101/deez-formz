@@ -65,17 +65,20 @@ export default function ResponsesPage({
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (status === "unauthenticated") router.push("/signin");
-    if (status === "authenticated") {
-      Promise.all([
-        fetch(`/api/forms/${id}`).then((r) => r.json()),
-        fetch(`/api/forms/${id}/responses`).then((r) => r.json()),
-      ]).then(([formData, responsesData]) => {
-        setForm(formData);
-        setResponses(Array.isArray(responsesData) ? responsesData : []);
-        setLoading(false);
-      });
+    if (status === "unauthenticated" && process.env.NODE_ENV === "production") {
+      router.push("/signin");
+      return;
     }
+    if (status === "loading" && process.env.NODE_ENV === "production") return;
+
+    Promise.all([
+      fetch(`/api/forms/${id}`).then((r) => r.json()),
+      fetch(`/api/forms/${id}/responses`).then((r) => r.json()),
+    ]).then(([formData, responsesData]) => {
+      setForm(formData);
+      setResponses(Array.isArray(responsesData) ? responsesData : []);
+      setLoading(false);
+    });
   }, [status, id, router]);
 
   if (loading || !form) {
