@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Share2, Check } from "lucide-react";
+import { type Translations } from "@/lib/i18n";
 
 const variants = {
   enter: (direction: number) => ({
@@ -18,7 +19,7 @@ const variants = {
 
 const transition = { duration: 0.4, ease: [0.32, 0.72, 0, 1] as const };
 
-export function ThankYouSlide({ direction }: { direction: number }) {
+export function ThankYouSlide({ direction, t }: { direction: number; t: Translations }) {
   const [copied, setCopied] = useState(false);
 
   function handleShare() {
@@ -39,9 +40,9 @@ export function ThankYouSlide({ direction }: { direction: number }) {
     >
       <div className="text-center">
         <CheckCircle2 className="mx-auto h-16 w-16 text-primary" />
-        <h1 className="mt-6 text-3xl font-bold">Thank you!</h1>
+        <h1 className="mt-6 text-3xl font-bold">{t.thankYou}</h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Your response has been recorded.
+          {t.responseRecorded}
         </p>
 
         <button
@@ -53,17 +54,17 @@ export function ThankYouSlide({ direction }: { direction: number }) {
           ) : (
             <Share2 className="h-4 w-4" />
           )}
-          {copied ? "Link copied!" : "Share this survey"}
+          {copied ? t.linkCopied : t.shareThisSurvey}
         </button>
 
         <div className="mt-10 border-t border-border pt-6">
           <p className="text-sm text-muted-foreground">
-            Like this survey?{" "}
+            {t.likeThisSurvey}{" "}
             <a
               href="/"
               className="font-medium text-primary underline underline-offset-4 hover:text-primary/80"
             >
-              Create your own for free
+              {t.createYourOwn}
             </a>
           </p>
         </div>

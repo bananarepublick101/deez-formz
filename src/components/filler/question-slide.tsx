@@ -15,6 +15,7 @@ import { NumberField } from "./fields/number-field";
 import { LikertField } from "./fields/likert-field";
 import { ImageUploadField } from "./fields/image-upload-field";
 import { SocialMediaField } from "./fields/social-media-field";
+import { type Translations } from "@/lib/i18n";
 
 const variants = {
   enter: (direction: number) => ({
@@ -49,6 +50,7 @@ interface QuestionSlideProps {
   onPrev: () => void;
   direction: number;
   isLast: boolean;
+  t: Translations;
 }
 
 const FIELD_MAP: Record<
@@ -83,6 +85,7 @@ export function QuestionSlide({
   onPrev,
   direction,
   isLast,
+  t,
 }: QuestionSlideProps) {
   const Field = FIELD_MAP[question.type] ?? ShortTextField;
 
@@ -99,7 +102,7 @@ export function QuestionSlide({
       <div className="w-full max-w-xl space-y-6">
         <div>
           <p className="text-sm text-muted-foreground">
-            {index + 1} of {total}
+            {index + 1} {t.of} {total}
             {question.required && <span className="ml-1 text-destructive">*</span>}
           </p>
           <h2 className="mt-2 text-2xl font-bold md:text-3xl">
@@ -120,16 +123,16 @@ export function QuestionSlide({
           <Button onClick={onNext} size="lg">
             {isLast ? (
               <>
-                Submit <Check className="ml-2 h-4 w-4" />
+                {t.submit} <Check className="ml-2 h-4 w-4" />
               </>
             ) : (
               <>
-                OK <ArrowDown className="ml-2 h-4 w-4" />
+                {t.ok} <ArrowDown className="ml-2 h-4 w-4" />
               </>
             )}
           </Button>
           <p className="text-xs text-muted-foreground">
-            Press <kbd className="rounded border px-1.5 py-0.5">Enter</kbd>
+            {t.pressEnter}
           </p>
         </div>
 

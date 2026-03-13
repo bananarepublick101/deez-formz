@@ -8,6 +8,8 @@ import { QuestionSlide } from "./question-slide";
 import { ThankYouSlide } from "./thank-you-slide";
 import { ThemeSlide, THEMES } from "./theme-slide";
 import { ProgressBar } from "./progress-bar";
+import { LanguageSlide } from "./language-slide";
+import { type Language, translations } from "@/lib/i18n";
 
 interface Question {
   id: string;
@@ -27,23 +29,30 @@ interface Form {
 }
 
 export function FormFiller({ form }: { form: Form }) {
-  // -3 = avatar, -2 = theme picker, -1 = welcome, 0..n = questions, n+1 = thank you
-  const [currentIndex, setCurrentIndex] = useState(-3);
+  // -4 = avatar, -3 = theme, -2 = language, -1 = welcome, 0..n = questions, n+1 = thank you
+  const [currentIndex, setCurrentIndex] = useState(-4);
   const [direction, setDirection] = useState(1);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [avatar, setAvatar] = useState<AvatarId | null>(null);
   const [selectedTheme, setSelectedTheme] = useState("forest-green");
+  const [lang, setLang] = useState<Language>("en");
 
+  const t = translations[lang];
   const totalQuestions = form.questions.length;
-  const isAvatarSelect = currentIndex === -3;
-  const isThemePicker = currentIndex === -2;
+  const isAvatarSelect = currentIndex === -4;
+  const isThemePicker = currentIndex === -3;
+  const isLanguage = currentIndex === -2;
   const isWelcome = currentIndex === -1;
   const isThankYou = currentIndex === totalQuestions;
   const currentQuestion = form.questions[currentIndex] ?? null;
 
   const progress =
-    isAvatarSelect || isThemePicker || isWelcome ? 0 : isThankYou ? 100 : ((currentIndex + 1) / totalQuestions) * 100;
+    isAvatarSelect || isThemePicker || isLanguage || isWelcome
+      ? 0
+      : isThankYou
+        ? 100
+        : ((currentIndex + 1) / totalQuestions) * 100;
 
   const goNext = useCallback(() => {
     if (currentIndex < totalQuestions) {
@@ -53,7 +62,7 @@ export function FormFiller({ form }: { form: Form }) {
   }, [currentIndex, totalQuestions]);
 
   const goPrev = useCallback(() => {
-    if (currentIndex > -3 && !submitted) {
+    if (currentIndex > -4 && !submitted) {
       setDirection(-1);
       setCurrentIndex((i) => i - 1);
     }
@@ -87,12 +96,18 @@ export function FormFiller({ form }: { form: Form }) {
     setAvatar(selectedAvatar);
   }
 
+  function handleLanguageSelect(selectedLang: Language) {
+    setLang(selectedLang);
+    goNext();
+  }
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Enter" || e.key === "ArrowDown") {
         e.preventDefault();
         if (isAvatarSelect && avatar) goNext();
         else if (isThemePicker) goNext();
+        else if (isLanguage) return; // language selection requires a click
         else if (isWelcome) goNext();
         else if (!isThankYou) handleNext();
       }
@@ -104,7 +119,7 @@ export function FormFiller({ form }: { form: Form }) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex, answers, isAvatarSelect, isThemePicker, isWelcome, isThankYou, avatar]);
+  }, [currentIndex, answers, isAvatarSelect, isThemePicker, isLanguage, isWelcome, isThankYou, avatar]);
 
   const activeTheme = THEMES.find((t) => t.id === selectedTheme) ?? THEMES[2];
 
@@ -122,7 +137,7 @@ export function FormFiller({ form }: { form: Form }) {
       className="relative min-h-screen overflow-hidden bg-background"
       style={themeStyles}
     >
-      <ProgressBar progress={progress} />
+      <ProgressBar progress={progress} quotes={t.quotes} />
 
       {/* Persistent avatar in top-right corner */}
       {avatar && !isAvatarSelect && (
@@ -156,6 +171,14 @@ export function FormFiller({ form }: { form: Form }) {
             onNext={goNext}
           />
         )}
+        {isLanguage && (
+          <LanguageSlide
+            key="language"
+            direction={direction}
+            t={t}
+            onSelect={handleLanguageSelect}
+          />
+        )}
         {isWelcome && (
           <WelcomeSlide
             key="welcome"
@@ -163,6 +186,7 @@ export function FormFiller({ form }: { form: Form }) {
             description={form.description}
             direction={direction}
             onStart={goNext}
+            t={t}
           />
         )}
         {currentQuestion && !isThankYou && (
@@ -177,10 +201,11 @@ export function FormFiller({ form }: { form: Form }) {
             onPrev={goPrev}
             direction={direction}
             isLast={currentIndex === totalQuestions - 1}
+            t={t}
           />
         )}
         {isThankYou && (
-          <ThankYouSlide key="thankyou" direction={direction} />
+          <ThankYouSlide key="thankyou" direction={direction} t={t} />
         )}
       </AnimatePresence>
     </div>

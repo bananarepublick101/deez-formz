@@ -2,28 +2,13 @@
 
 import { motion } from "framer-motion";
 
-const MOTIVATIONAL_QUOTES = [
-  "You're doing amazing — keep going! 🔥",
-  "Almost there, you absolute legend! 🏆",
-  "Your answers are chef's kiss 👨‍🍳💋",
-  "This form won't fill itself... oh wait, you're doing it! 💪",
-  "Halfway there! Livin' on a prayer 🎸",
-  "You're faster than a caffeinated cheetah ⚡",
-  "The finish line can smell your determination 🏁",
-  "Keep going — free dopamine at the end! 🧠",
-  "You're crushing it harder than a hydraulic press 🫡",
-  "Just a few more — you've got this! 🚀",
-  "Your dedication is bringing a tear to our server's eye 🥲",
-  "Fun fact: finishing forms burns 0 calories but feels great 😎",
-];
-
-function getQuote(progress: number): string {
-  const index = Math.floor((progress / 100) * (MOTIVATIONAL_QUOTES.length - 1));
-  return MOTIVATIONAL_QUOTES[Math.min(index, MOTIVATIONAL_QUOTES.length - 1)];
+function getQuote(progress: number, quotes: string[]): string {
+  const index = Math.floor((progress / 100) * (quotes.length - 1));
+  return quotes[Math.min(index, quotes.length - 1)];
 }
 
-export function ProgressBar({ progress }: { progress: number }) {
-  const quote = getQuote(progress);
+export function ProgressBar({ progress, quotes }: { progress: number; quotes: string[] }) {
+  const quote = getQuote(progress, quotes);
   const showMotivation = progress > 0 && progress < 100;
 
   return (
