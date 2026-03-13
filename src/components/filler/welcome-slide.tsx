@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowDown } from "lucide-react";
+import { type Translations } from "@/lib/i18n";
 
 const variants = {
   enter: (direction: number) => ({
@@ -23,6 +24,7 @@ interface WelcomeSlideProps {
   description: string | null;
   direction: number;
   onStart: () => void;
+  t: Translations;
 }
 
 export function WelcomeSlide({
@@ -30,6 +32,7 @@ export function WelcomeSlide({
   description,
   direction,
   onStart,
+  t,
 }: WelcomeSlideProps) {
   return (
     <motion.div
@@ -47,12 +50,11 @@ export function WelcomeSlide({
           <p className="mt-4 text-lg text-muted-foreground">{description}</p>
         )}
         <Button size="lg" className="mt-8" onClick={onStart}>
-          Start
+          {t.start}
           <ArrowDown className="ml-2 h-4 w-4" />
         </Button>
         <p className="mt-4 text-xs text-muted-foreground">
-          Press <kbd className="rounded border px-1.5 py-0.5">Enter</kbd> to
-          begin
+          {t.pressEnterToBegin}
         </p>
       </div>
     </motion.div>
